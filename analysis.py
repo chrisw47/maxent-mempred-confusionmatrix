@@ -41,10 +41,10 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
     for num in experiment_list:
 
         if x_type == 'local':
-            PATH = f'real data/exp{num}_local.mat'
+            PATH = f'real data/experiment_{num}_20h_stimL.mat'
             Ts, Cs = load_data(PATH)
             _, full_array = neuron_system(
-                Ts / (16000 * BIN), Cs, int(72000 / BIN))
+                Ts / BIN, Cs, int(72000 / BIN))
 
         elif x_type == 'global':
             PATH = f'real data/experiment_{num}_20h_stim.mat'

@@ -15,7 +15,9 @@ def load_data(path):
     '''
 
     data = sio.loadmat(path)['data']
-    return data[0, 0]['Ts'], data[0, 0]['Cs']
+    rate = int(data['sampleRate'][0][0])
+
+    return data[0, 0]['Ts'] / rate, data[0, 0]['Cs']
 
 
 def split_array(neuron_array: np.ndarray, TIMESHIFT: float, BINSIZE: float):
