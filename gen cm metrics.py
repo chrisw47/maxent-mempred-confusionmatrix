@@ -65,7 +65,7 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
                 df = split_array(full_array, ts, BIN)
 
             elif x_type == 'global':
-                df = extract_opto(PATH, ts)
+                _, df = extract_opto(PATH, ts)
 
             correlations = construct_corr_matrix(df)
             # plot_correlation_matrix(correlations, 60, num)
