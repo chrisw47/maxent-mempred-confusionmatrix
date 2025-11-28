@@ -6,9 +6,7 @@ SIZE = 6
 BIN = 0.1  # seconds
 
 
-def hour_by_hour(x_list: list):
-
-    XTYPE = input('Global (\'global\') or local (\'local\') stimulation? ')
+def hour_by_hour(x_list: list, XTYPE: str):
 
     b, p = [], []
 
@@ -26,7 +24,7 @@ def hour_by_hour(x_list: list):
 
         elif XTYPE == 'global':
             PATH = f'real data/experiment_{x}_20h_stim.mat'
-            df = extract_opto(PATH, TIMESHIFT)
+            df = extract_opto(PATH, TIMESHIFT, BIN)
 
         else:
             raise ValueError(
@@ -70,18 +68,29 @@ def hour_by_hour(x_list: list):
     np.save(f'{XTYPE}/{XTYPE} hh model.npy', p)
 
 if __name__ == '__main__':
-    xl = [9, 12, 14, 15, 16, 17, 18, 19]
-    xg = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    # hour_by_hour(xl)
-    hour_by_hour(xg) # need to check if i'm assigning the stimuli incorrectly
+    # xl = [9, 12, 14, 15, 16, 17, 18, 19]
+    # xg = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    # hour_by_hour(xl, 'local')
+    # hour_by_hour(xg, 'global')
+    blhh = np.load('local/local hh baseline.npy') # baseline local hour-hour
+    plhh = np.load('local/local hh model.npy')
+    bghh = np.load('global/global hh baseline.npy')
+    pghh = np.load('global/global hh model.npy')
+
+    # print(f'Baseline global:\n\n{bghh}\n\nModel global:\n\n{pghh}')
+
+    pghhm, pghhci = mean_and_ci(pghh, 90)
+    plhhm, plhhci = mean_and_ci(plhh, 90)
+
+    t = np.arange(1, 21, 1)
+
+    print(t.shape)
+    print(pghhm.shape)
+
+    plt.scatter(t, pghhm, s=8, c='b')
+    plt.scatter(t, plhhm, s=8, c='r')
+    plt.show()
 
 
-# testT = np.arange(0.5, 20.5, 1)
-# testR = np.random.normal(0, 1, 40).reshape((2, 20))
-# cond = np.where(np.abs(testT - 15 / 2) <= 5 / 2)
-# mask = np.isin(testT, cond)
 
-# print(mask)
 
-# print(f'Original array: {testR}\n')
-# print(f'Filtered array: {testR[:, mask]}')

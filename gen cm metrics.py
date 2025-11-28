@@ -41,7 +41,7 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
     for num in experiment_list:
 
         if x_type == 'local':
-            PATH = f'real data/experiment_{num}_20h_stimL.mat'
+            PATH = f'real data/exp{num}_local.mat'
             Ts, Cs = load_data(PATH)
             _, full_array = neuron_system(
                 Ts / BIN, Cs, int(72000 / BIN))
@@ -65,7 +65,7 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
                 df = split_array(full_array, ts, BIN)
 
             elif x_type == 'global':
-                _, df = extract_opto(PATH, ts)
+                df = extract_opto(PATH, ts, BIN)
 
             correlations = construct_corr_matrix(df)
             # plot_correlation_matrix(correlations, 60, num)
@@ -125,7 +125,8 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
 
 
 if __name__ == '__main__':
-    experiment_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # [9, 12, 14, 15, 16, 17, 18, 19]
+    # [9, 12, 14, 15, 16, 17, 18, 19] for local
+    experiment_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
     timeshifts = np.arange(-2, 3)
     system_sizes = np.arange(3, 7)
 
