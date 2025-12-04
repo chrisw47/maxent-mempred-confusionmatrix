@@ -10,7 +10,8 @@ plt.rcParams.update({
     "text.usetex": True,
     "text.latex.preamble": r"\usepackage{amsmath} \usepackage{amssymb}",
     "font.family": "serif",
-    "font.serif": "Computer Modern"
+    "font.serif": "Computer Modern",
+    "font.weight": "bold"
 })
 
 BIN = 0.1  # (sec)

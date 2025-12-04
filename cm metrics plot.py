@@ -124,5 +124,5 @@ axs[1, 2].set_ylabel('\\Huge{\\textbf{True negative rate}}')
 axs[1, 2].legend(loc=4)
 
 plt.tight_layout()
-# plt.savefig('figs/cm metrics 2.png', dpi=400)
+# plt.savefig('figs/cm metrics updated.png', dpi=400)
 # plt.show()

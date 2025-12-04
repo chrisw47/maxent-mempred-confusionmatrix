@@ -18,7 +18,9 @@ This repository contains the code I wrote to analyze and create figures used in 
 
 - **hourly.py**: Splits data up into hourly segments, then runs MaxEnt analysis on each hour for both optogenetic and electric stimulation. Uses subsystem size of six neurons at 0ms timeshift. Generates figure in **figs** folder.
 
-- **statistical_tests.py**: \[hello\]
+- **statistical_tests.py**: Runs Shapiro-Wilk normality test and t-test and on experimental data.
+
+- **binsizes.py**: Investigates the effect of time resolution on confusion matrix metrics. Assumes subsystem size of six neurons at best performance timeshift (ie. 0 ms for electric and -100 ms for optogenetic stimulation).
 
 - **physf.py**: Contains all the physics-related functions I used.
 
