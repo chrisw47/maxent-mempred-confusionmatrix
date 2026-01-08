@@ -1,6 +1,6 @@
 from physf import *
 from dataf import *
-import matplotlib.ticker
+import scipy.stats as stats
 
 plt.rcParams.update({
     'legend.fontsize': 16,
@@ -111,6 +111,11 @@ pl_tp = np.load(f'local/local bsizes p_tp.npy')
 
 impg = (pg - bg) / (1 - bg) # improvement over baseline
 impl = (pl - bl) / (1 - bl)
+
+
+# print(impg)
+print(stats.ttest_ind(impl[:, 0], impl[:, 2]))
+quit()
 
 impg, impgci = mean_and_ci(impg, 90)
 impl, implci = mean_and_ci(impl, 90)
