@@ -2,7 +2,7 @@
 
 # Statistical mechanical models with bias and variance
 
-The code **Bias and variance.py** contains the code that reproduces the first statistical mechanical model-related figure in the manuscript titled **Analyzing an organism’s sensors using Maximum Entropy models with bias, variance, and confusion matrices**, currently in preparation. The code can be easily adapted to any other stimulus-dependent Maximum Entropy model, including those that are not statistical mechanical, by changing the probability matrix that is initialized specifically for the lac operon regulation in this particular example.
+The code **Bias and variance.py** contains the code that reproduces the first statistical mechanical model-related figure in the manuscript titled **Analyzing an organism’s sensors using Maximum Entropy models with bias, variance, and confusion matrices**, currently in preparation. The code can be easily adapted to any other stimulus-dependent Maximum Entropy model, including those that are not statistical mechanical, by changing the probability matrix that is initialized specifically for the lac operon regulation in this particular example. This code was co-written by Sarah Marzen, Tristan Kako, and most importantly, Aiden Gao.
 
 # Confusion matrices with memory and prediction
 
