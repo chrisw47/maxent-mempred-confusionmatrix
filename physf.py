@@ -1,6 +1,7 @@
 import numpy as np
 import scipy.stats as stats
 from scipy.optimize import minimize
+from scipy.special import logsumexp
 import time
 
 
@@ -50,25 +51,19 @@ def P_data(data):
 
 
 # note: does not include realJ like in isingfit.py.
-def KL(theta, data, data_probs_list):
+def KL(theta, data, data_probs_list, state_arr):
     '''
     Returns the KL divergence of two probability distributions. In this case, the KL divergence between model and real probability distributions is calculated.
     '''
     k = data.shape[1]
     theta = theta.reshape(k, k)
 
-    # Generates all possible binary states for k
-    state_list = generate_binary_states(k)
+    # Use einsum to compute energies, only calculates partition function once.
+    energies = np.diag(np.einsum('ij,jk,lk', state_arr, theta, state_arr))
+    log_Z = logsumexp(energies)
+    model_prob = 1 / np.exp(log_Z) * np.exp(energies)
 
-    # Initialize the probability arrays
-    data_prob, model_prob = data_probs_list, np.zeros(len(state_list))
-
-    # Iterate over each state in state_list
-    for j in range(len(state_list)):
-        # Always calculate the model probability
-        model_prob[j] = P(state_list[j], theta, state_list)
-
-    return stats.entropy(data_prob, model_prob)
+    return stats.entropy(data_probs_list, model_prob)
 
 
 def likelihood(J_matrix, net_array):
@@ -117,8 +112,11 @@ def maxent(stimulus: np.ndarray, network: np.ndarray, system_size: float) -> np.
     # print(timeshifted_probs)
     theta0 = theta0.flatten()  # flatten theta to 1d array
 
+    k = timeshifted_data.shape[1]
+    states = generate_binary_states(k)
+
     # minimize KL divergence between model and data, reshape to 2d array
-    op_params = minimize(KL, theta0, args=(timeshifted_data, timeshifted_probs), method='L-BFGS-B',
+    op_params = minimize(KL, theta0, args=(timeshifted_data, timeshifted_probs, states), method='L-BFGS-B',
                          options={'maxiter': 200}, tol=1e-7).x.reshape(system_size, system_size)
 
     e = time.time()
