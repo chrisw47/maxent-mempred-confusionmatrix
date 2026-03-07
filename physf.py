@@ -63,7 +63,11 @@ def KL(theta, data, data_probs_list, state_arr):
     log_Z = logsumexp(energies)
     model_prob = 1 / np.exp(log_Z) * np.exp(energies)
 
-    return stats.entropy(data_probs_list, model_prob)
+    activity_prop = np.count_nonzero(data[:, 0] == 1.) / len(data[:, 0])
+    inactivity_prop = 1 - activity_prop
+    weights = np.where(state_arr[:, 0] == 1., inactivity_prop / activity_prop, 1.0)
+
+    return stats.entropy(data_probs_list * weights, model_prob * weights)
 
 
 def likelihood(J_matrix, net_array):
@@ -125,3 +129,10 @@ def maxent(stimulus: np.ndarray, network: np.ndarray, system_size: float) -> np.
         f'KL divergence MINIMIZED, and J matrix elements FOUND. Proceeding to next step. COMPILATION TIME: {round(e-s, 2)} seconds.\n')
 
     return op_params
+
+if __name__ == '__main__':
+    k = 7
+    states = generate_binary_states(k)
+    weights = np.where(states[:, 0] == 1., 3, 1)
+    print(states)
+    print(weights)
