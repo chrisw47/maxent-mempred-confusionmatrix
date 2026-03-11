@@ -149,7 +149,7 @@ def extract_opto(path: str, ts: int, bin: float):
         A dataframe with each column corresponding to a neuron and row corresponding to a time bin.
     '''
 
-    # experiment 1 is the only experiment that's written in MATLAB v7.3, others are MATLAB v5.0
+    # experiment 1 is the only experiment that's written in MATLAB v7.3, others are MATLAB v5.0...
     if re.search(r'(\d+)', path).group() == '1':
         f = h5py.File(path)
         data = f['data']
@@ -377,3 +377,9 @@ def cm_metrics(stimulus, network, op_params) -> tuple[float]:
     print(f'Normalized confusion matrix: \n{confusion_matrix}' + '\n' * 5)
 
     return baseline_accuracy, predictive_accuracy, true_negative_rate, true_positive_rate
+
+if __name__ == '__main__':
+    setA = set(range(1,61))
+    eltB = 61
+    setA.add(eltB)
+    print(setA)

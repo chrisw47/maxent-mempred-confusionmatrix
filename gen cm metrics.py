@@ -77,29 +77,60 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
             b_tn_ss = []
             p_tn_ss = []
 
+            subset = set([60]) # selected neuron subset based off of optimal addition to predictive accuracy. Neuron 60 is by default in the list, since that is the stimulus neuron.
+
             for ss in system_sizes:
                 print(
                     f'BEGINNING ANALYSIS FOR EXPERIMENT {num}. SYSTEM SIZE: {ss} NEURONS. TIMESHIFT: {ts * BIN} S.')
+                
+                neurons_to_try = set(range(1,61)) - subset
 
-                neuron_candidates, candidate_corrs = filter_neurons(
-                    correlations, 60, ss)
+                print(f'Neurons to try:\t{neurons_to_try}.')
 
-                print(f'NEURONS CHOSEN:\t{neuron_candidates}.')
-                print(f'CORRELATIONS:\t{candidate_corrs}.\n')
+                # neuron_candidates, candidate_corrs = filter_neurons(
+                #     correlations, 60, ss)
 
-                _, ts_stim, ts_net = select_neuron_subset(
-                    df, neuron_candidates)  # time bins are rows
+                # print(f'NEURONS CHOSEN:\t{neuron_candidates}.')
+                # print(f'CORRELATIONS:\t{candidate_corrs}.\n')
 
-                j = maxent(ts_stim, ts_net, ss)
+                # _, ts_stim, ts_net = select_neuron_subset(
+                #     df, neuron_candidates)  # time bins are rows, ts_stim: timeshifted stimulus array, ts_net: timeshifted network array. this selection applies when choosing based off of Pearson corr.
 
-                ba, pa, tn, tp = cm_metrics(ts_stim, ts_net, j)
+                metrics = [] # list of predictive accuracies to document which neuron adds most beneficially to overall predictive accuracy.
 
-                b_ss.append(ba)
-                p_ss.append(pa)
-                b_tp_ss.append(0)
-                p_tp_ss.append(tp)
-                b_tn_ss.append(1)
-                p_tn_ss.append(tn)
+                for n in neurons_to_try:
+                    subset.add(n)
+
+                    print(f'Trying subset containing neurons:\t {sorted(subset)}.')
+
+                    _, ts_stim, ts_net = select_neuron_subset(
+                        df, sorted(subset)) # time bins are rows, ts_stim: timeshifted stimulus array, ts_net: timeshifted network array. this selection applies when we choose off of optimal contribution to predictive accuracy.
+
+                    j = maxent(ts_stim, ts_net, ss)
+
+                    ba, pa, tn, tp = cm_metrics(ts_stim, ts_net, j)
+
+                    pred_accs += [n, ba, pa, tn, tp]
+                    subset.remove(n)
+
+                    print(f'List of neuron indices and predictive accuracies:\n\n{pred_accs}')
+                
+                metrics = np.array(metrics).reshape((len(neurons_to_try), 5)) # reshapes into an nx5 array
+
+                # Find the neuron that maximizes model predictive accuracy
+                max_idx = np.argmax(metrics[:, 2])
+                best_neuron_idx = int(metrics[max_idx, 0])
+                subset.add(best_neuron_idx)
+
+                ba, pa, tn, tp = metrics[max_idx, 1:]
+
+                if ss >= 3:
+                    b_ss.append(ba)
+                    p_ss.append(pa)
+                    b_tp_ss.append(0)
+                    p_tp_ss.append(tp)
+                    b_tn_ss.append(1)
+                    p_tn_ss.append(tn)
 
             b_ts.append(b_ss)
             p_ts.append(p_ss)
@@ -119,7 +150,7 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
 
     for a, name in zip(arrs, ['b', 'p', 'b_tp', 'p_tp', 'b_tn', 'p_tn']):
         a = np.array(a)
-        np.save(f'{x_type}/{x_type} stim {name}.npy', a)
+        np.save(f'{x_type}/{x_type} stim {name} revised.npy', a)
 
     return b, p, b_tp, p_tp, b_tn, p_tn
 
@@ -127,8 +158,8 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
 if __name__ == '__main__':
     # [9, 12, 14, 15, 16, 17, 18, 19] for local
     experiment_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    timeshifts = np.arange(-2, 3)
-    system_sizes = np.arange(3, 7)
+    timeshifts = np.arange(-1, 2)
+    system_sizes = np.arange(2, 7)
 
     b, p, b_tp, p_tp, b_tn, p_tn = main_analysis(
         experiment_nums, timeshifts, system_sizes)
