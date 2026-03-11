@@ -67,7 +67,7 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
             elif x_type == 'global':
                 df = extract_opto(PATH, ts, BIN)
 
-            correlations = construct_corr_matrix(df)
+            # correlations = construct_corr_matrix(df)
             # plot_correlation_matrix(correlations, 60, num)
 
             b_ss = []
@@ -110,10 +110,10 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
 
                     ba, pa, tn, tp = cm_metrics(ts_stim, ts_net, j)
 
-                    pred_accs += [n, ba, pa, tn, tp]
+                    metrics += [n, ba, pa, tn, tp]
                     subset.remove(n)
 
-                    print(f'List of neuron indices and predictive accuracies:\n\n{pred_accs}')
+                    print(f'List of neuron indices and predictive accuracies:\n\n{metrics}')
                 
                 metrics = np.array(metrics).reshape((len(neurons_to_try), 5)) # reshapes into an nx5 array
 
@@ -158,7 +158,7 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
 if __name__ == '__main__':
     # [9, 12, 14, 15, 16, 17, 18, 19] for local
     experiment_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-    timeshifts = np.arange(-1, 2)
+    timeshifts = np.arange(-2, 3)
     system_sizes = np.arange(2, 7)
 
     b, p, b_tp, p_tp, b_tn, p_tn = main_analysis(
