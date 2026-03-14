@@ -377,9 +377,3 @@ def cm_metrics(stimulus, network, op_params) -> tuple[float]:
     print(f'Normalized confusion matrix: \n{confusion_matrix}' + '\n' * 5)
 
     return baseline_accuracy, predictive_accuracy, true_negative_rate, true_positive_rate
-
-if __name__ == '__main__':
-    setA = set(range(1,61))
-    eltB = 61
-    setA.add(eltB)
-    print(setA)

@@ -156,8 +156,7 @@ def main_analysis(experiment_list: list, timeshifts: np.ndarray, system_sizes: n
 
 
 if __name__ == '__main__':
-    # [9, 12, 14, 15, 16, 17, 18, 19] for local
-    experiment_nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+    experiment_nums = [9, 12, 14, 15, 16, 17, 18, 19] # — local # [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] # — global
     timeshifts = np.arange(-2, 3)
     system_sizes = np.arange(2, 7)
 

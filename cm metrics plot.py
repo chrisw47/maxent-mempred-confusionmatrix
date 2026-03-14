@@ -15,21 +15,21 @@ plt.rcParams.update({
 
 # GLOBAL
 
-gb = np.load('global/global stim b.npy') # baseline predictive accuracy
-gp = np.load('global/global stim p.npy') # model predictive accuracy
-gbtp = np.load('global/global stim b_tp.npy') # baseline true positives
-gptp = np.load('global/global stim p_tp.npy') # model true positives
-gbtn = np.load('global/global stim b_tn.npy') # baseline true negatives
-gptn = np.load('global/global stim p_tn.npy') # model true negatives
+gb = np.load('global/global stim b revised.npy') # baseline predictive accuracy
+gp = np.load('global/global stim p revised.npy') # model predictive accuracy
+gbtp = np.load('global/global stim b_tp revised.npy') # baseline true positives
+gptp = np.load('global/global stim p_tp revised.npy') # model true positives
+gbtn = np.load('global/global stim b_tn revised.npy') # baseline true negatives
+gptn = np.load('global/global stim p_tn revised.npy') # model true negatives
 
 # LOCAL
 
-lb = np.load('local/local stim b.npy') # baseline predictive accuracy
-lp = np.load('local/local stim p.npy') # model predictive accuracy
-lbtp = np.load('local/local stim b_tp.npy') # baseline true positives
-lptp = np.load('local/local stim p_tp.npy') # model true positives
-lbtn = np.load('local/local stim b_tn.npy') # baseline true negatives
-lptn = np.load('local/local stim p_tn.npy') # model true negatives
+lb = np.load('local/local stim b revised.npy') # baseline predictive accuracy
+lp = np.load('local/local stim p revised.npy') # model predictive accuracy
+lbtp = np.load('local/local stim b_tp revised.npy') # baseline true positives
+lptp = np.load('local/local stim p_tp revised.npy') # model true positives
+lbtn = np.load('local/local stim b_tn revised.npy') # baseline true negatives
+lptn = np.load('local/local stim p_tn revised.npy') # model true negatives
 
 gbm, gbci = mean_and_ci(gb, 90)
 gpm, gpci = mean_and_ci(gp, 90)
@@ -124,5 +124,5 @@ axs[1, 2].set_ylabel('\\Huge{\\textbf{True negative rate}}')
 axs[1, 2].legend(loc=4)
 
 plt.tight_layout()
-# plt.savefig('figs/cm metrics updated.png', dpi=400)
-# plt.show()
+plt.savefig('figs/cm metrics revision.png', dpi=400)
+plt.show()
