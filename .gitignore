@@ -1,0 +1,22 @@
+/__pycache__
+/.vscode
+/confmat_realdata
+/correlation matrices
+/docs for frob norm plot
+/earlier figs
+/J matrices
+/pred accuracy plots
+/raw data vis
+/real data
+/test states
+/thesis txt files
+/timeshift 0ms confmats
+/*.txt
+/ising*.py
+/correlations.py
+/likelihood.py
+/thesis_plots.py
+/old fns.py
+/funcs.py
+/benchmark_kl.py
+/check_gpu_usage.py

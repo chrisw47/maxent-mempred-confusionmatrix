@@ -3,10 +3,6 @@ import scipy.stats as stats
 from scipy.optimize import minimize
 from scipy.special import logsumexp
 import time
-import jax
-import jax.numpy as jnp
-from jax import jit
-from jax.scipy.special import logsumexp as logsumexp_jax
 
 
 def random_binary_states(length):
@@ -54,69 +50,24 @@ def P_data(data):
     return data_prob
 
 
-# JAX JIT-compiled KL divergence for fast computation with M1 Pro
-def _make_kl_fn(k):
-    '''Factory function to create a JIT-compiled KL function with fixed k.'''
-    @jit
-    def _KL_jax_compiled(theta_flat, state_arr_jax, data_probs_jax, weights_jax):
-        '''
-        JAX JIT-compiled inner KL function (called repeatedly during optimization).
-        This is where the speedup happens — JIT compiles this function once, then runs it fast.
-        '''
-        theta = theta_flat.reshape((k, k))
-
-        # Vectorized energy calculation using einsum
-        energies = jnp.diag(jnp.einsum('ij,jk,lk->l', state_arr_jax, theta, state_arr_jax))
-
-        # Numerically stable log partition function
-        log_Z = logsumexp_jax(energies)
-
-        # Model probabilities (numerically stable)
-        model_prob = jnp.exp(energies - log_Z)
-
-        # Weighted KL divergence: sum(p_data * w * log(p_data / (p_model * w)))
-        # Adding epsilon to avoid log(0)
-        eps = 1e-12
-        weighted_data = data_probs_jax * weights_jax
-        weighted_model = model_prob * weights_jax
-        kl_div = jnp.sum(weighted_data * jnp.log(weighted_data / (weighted_model + eps) + eps))
-
-        return kl_div
-
-    return _KL_jax_compiled
-
-
-# Cache for JIT-compiled functions (keyed by system size k)
-_kl_fn_cache = {}
-
 # note: does not include realJ like in isingfit.py.
 def KL(theta, data, data_probs_list, state_arr):
     '''
-    Wrapper for scipy.optimize.minimize that calls the JAX JIT-compiled function.
-    Handles NumPy↔JAX conversion and caches the JIT-compiled function for each k.
+    Returns the KL divergence of two probability distributions. In this case, the KL divergence between model and real probability distributions is calculated.
     '''
     k = data.shape[1]
+    theta = theta.reshape(k, k)
 
-    # Get or create the JIT-compiled function for this k value
-    if k not in _kl_fn_cache:
-        _kl_fn_cache[k] = _make_kl_fn(k)
-    kl_fn = _kl_fn_cache[k]
+    # Use einsum to compute energies, only calculates partition function once.
+    energies = np.diag(np.einsum('ij,jk,lk', state_arr, theta, state_arr))
+    log_Z = logsumexp(energies)
+    model_prob = 1 / np.exp(log_Z) * np.exp(energies)
 
-    # Pre-compute weights once (outside the jit function for efficiency)
     activity_prop = np.count_nonzero(data[:, 0] == 1.) / len(data[:, 0])
     inactivity_prop = 1 - activity_prop
     weights = np.where(state_arr[:, 0] == 1., inactivity_prop / activity_prop, 1.0)
 
-    # Convert to JAX arrays (lightweight if already on device)
-    theta_jax = jnp.asarray(theta)
-    state_arr_jax = jnp.asarray(state_arr)
-    data_probs_jax = jnp.asarray(data_probs_list)
-    weights_jax = jnp.asarray(weights)
-
-    # Call JIT-compiled function and convert back to float for scipy
-    kl_value = float(kl_fn(theta_jax, state_arr_jax, data_probs_jax, weights_jax))
-
-    return kl_value
+    return stats.entropy(data_probs_list * weights, model_prob * weights)
 
 
 def likelihood(J_matrix, net_array):

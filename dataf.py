@@ -35,7 +35,7 @@ def load_data(path):
     '''
 
     data = sio.loadmat(path)['data']
-    rate = int(np.asarray(data['sampleRate']).flat[0])
+    rate = int(data['sampleRate'][0][0])
 
     return data[0, 0]['Ts'] / rate, data[0, 0]['Cs']
 
@@ -296,7 +296,6 @@ def mean_and_ci(a: np.ndarray, pct: int):
 def cm_metrics(stimulus, network, op_params) -> tuple[float]:
     """
     Compute classification performance metrics for a maximum entropy model. Assuming fixed timeshift.
-    Vectorized version for 50-100x speedup over loop-based implementation.
 
     Parameters
     ----------
@@ -321,19 +320,17 @@ def cm_metrics(stimulus, network, op_params) -> tuple[float]:
     Notes
     -----
     Classifies stimulus using likelihood ratio > 1 for stimulus = 1.
+
     **NOTE: time bins are in rows.**
     """
     print('GENERATING CONFUSION MATRIX METRICS...\n' + '=' * 38 + '\n')
 
-    # Vectorized likelihood calculation for all samples at once
-    J_xx = op_params[0, 0]
-    J_xs = op_params[0, 1:]
-    J_sx = op_params[1:, 0]
+    # Vectorized likelihood calculation (preserving the form from likelihood() function)
+    J_xx, J_xs, J_sx = op_params[0, 0], op_params[0, 1:], op_params[1:, 0]
+    # network is shape (n_samples, n_neurons), compute likelihood for all samples at once
+    likelihood_ratios = np.exp(J_xx + J_xs.dot(network.T) + network.dot(J_sx))
 
-    # Compute likelihood ratios for all samples: exp(J_xx + J_xs·network + network·J_sx)
-    likelihood_ratios = np.exp(J_xx + np.dot(network, J_xs) + np.dot(network, J_sx))
-
-    # Vectorized predictions (1 if likelihood > 1, else 0)
+    # Vectorized predictions: 1 if likelihood > 1, else 0
     predictions = (likelihood_ratios > 1).astype(float)
 
     # Vectorized confusion matrix construction
@@ -342,6 +339,23 @@ def cm_metrics(stimulus, network, op_params) -> tuple[float]:
     confusion_matrix[0, 1] = np.sum((stimulus == 1) & (predictions == 0))  # FN
     confusion_matrix[1, 1] = np.sum((stimulus == 1) & (predictions == 1))  # TP
     confusion_matrix[1, 0] = np.sum((stimulus == 0) & (predictions == 1))  # FP
+
+    # confusion_matrix = np.zeros((2, 2))  # initialize confusion matrix 
+    # for i in range(len(stimulus)):                                                                                                                                       
+    #     OUTPUT = 0.0
+    #     stim = stimulus[i]                                                                                                                                               
+    #     net_vec = network[i, :]
+    #     likelihood_ratio = likelihood(op_params, net_vec)                                                                                                                
+    #     if likelihood_ratio > 1:                                                                                                                                         
+    #         OUTPUT = 1.0                                                                                                                                                                                                                                                                                                                   
+    #     if stim == 0 and OUTPUT == 0:                                                                                                                                    
+    #         confusion_matrix[0, 0] += 1                                                                                                                                  
+    #     elif stim == 1 and OUTPUT == 0:                                                                                                                                  
+    #         confusion_matrix[0, 1] += 1                                                                                                                                  
+    #     elif stim == 1 and OUTPUT == 1:                                                                                                                                  
+    #         confusion_matrix[1, 1] += 1                                                                                                                                  
+    #     elif stim == 0 and OUTPUT == 1:                                                                                                                                  
+    #         confusion_matrix[1, 0] += 1                                                                                                                               
 
     ACTUAL_0 = confusion_matrix[0, 0] + confusion_matrix[1, 0]
     ACTUAL_1 = confusion_matrix[0, 1] + confusion_matrix[1, 1]
@@ -355,7 +369,7 @@ def cm_metrics(stimulus, network, op_params) -> tuple[float]:
     BASELINE_ACCURACY = ACTUAL_0 / total_elts
     PREDICTIVE_ACCURACY = np.trace(confusion_matrix) / total_elts
 
-    # Normalize the confusion matrix
+    # normalizes the confusion matrix
     confusion_matrix[0, 0] /= ACTUAL_0
     confusion_matrix[1, 0] /= ACTUAL_0
     confusion_matrix[0, 1] /= ACTUAL_1
