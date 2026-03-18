@@ -129,10 +129,3 @@ def maxent(stimulus: np.ndarray, network: np.ndarray, system_size: float) -> np.
         f'KL divergence MINIMIZED, and J matrix elements FOUND. Proceeding to next step. COMPILATION TIME: {round(e-s, 2)} seconds.\n')
 
     return op_params
-
-if __name__ == '__main__':
-    k = 7
-    states = generate_binary_states(k)
-    weights = np.where(states[:, 0] == 1., 3, 1)
-    print(states)
-    print(weights)
