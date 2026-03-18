@@ -1,7 +1,7 @@
-from physf import *
-from dataf import *
 import matplotlib.pyplot as plt
 import numpy as np
+from physf import *
+from dataf import *
 
 plt.rcParams.update({
     "text.usetex": True,
@@ -31,19 +31,19 @@ lptp = np.load('local/local stim p_tp revised.npy') # model true positives
 lbtn = np.load('local/local stim b_tn revised.npy') # baseline true negatives
 lptn = np.load('local/local stim p_tn revised.npy') # model true negatives
 
-gbm, gbci = mean_and_ci(gb, 90)
-gpm, gpci = mean_and_ci(gp, 90)
-gbtpm, gbtpci = mean_and_ci(gbtp, 90)
-gptpm, gptpci = mean_and_ci(gptp, 90)
-gbtnm, gbtnci = mean_and_ci(gbtn, 90)
-gptnm, gptnci = mean_and_ci(gptn, 90)
+gbm, gbci = mean_and_ci(gb, 95)
+gpm, gpci = mean_and_ci(gp, 95)
+gbtpm, gbtpci = mean_and_ci(gbtp, 95)
+gptpm, gptpci = mean_and_ci(gptp, 95)
+gbtnm, gbtnci = mean_and_ci(gbtn, 95)
+gptnm, gptnci = mean_and_ci(gptn, 95)
 
-lbm, lbci = mean_and_ci(lb, 90)
-lpm, lpci = mean_and_ci(lp, 90)
-lbtpm, lbtpci = mean_and_ci(lbtp, 90)
-lptpm, lptpci = mean_and_ci(lptp, 90)
-lbtnm, lbtnci = mean_and_ci(lbtn, 90)
-lptnm, lptnci = mean_and_ci(lptn, 90)
+lbm, lbci = mean_and_ci(lb, 95)
+lpm, lpci = mean_and_ci(lp, 95)
+lbtpm, lbtpci = mean_and_ci(lbtp, 95)
+lptpm, lptpci = mean_and_ci(lptp, 95)
+lbtnm, lbtnci = mean_and_ci(lbtn, 95)
+lptnm, lptnci = mean_and_ci(lptn, 95)
 
 ss = np.arange(3, 7)
 ts = np.arange(-200, 300, 100) # in ms
