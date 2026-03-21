@@ -8,135 +8,135 @@ plt.rcParams.update({
 })
 
 
-def metrics_by_binsize(df: pd.DataFrame):
+# def metrics_by_binsize(df: pd.DataFrame):
 
-    b = 0  # baseline predictive accuracy
-    m = 0  # model predictive accuracy
-    bn = 1  # baseline true negative rate
-    mn = 0  # model true negative rate
-    bp = 0  # baseline true positive rate
-    mp = 0  # model true positive rate
+#     b = 0  # baseline predictive accuracy
+#     m = 0  # model predictive accuracy
+#     bn = 1  # baseline true negative rate
+#     mn = 0  # model true negative rate
+#     bp = 0  # baseline true positive rate
+#     mp = 0  # model true positive rate
 
-    # corr_mat = construct_corr_matrix(df)
+#     # corr_mat = construct_corr_matrix(df)
 
-    # candidates, cand_corrs = filter_neurons(corr_mat, 60, SSIZE)
+#     # candidates, cand_corrs = filter_neurons(corr_mat, 60, SSIZE)
 
-    # print(f'NEURONS CHOSEN:\t{candidates}.')
-    # print(f'CORRELATIONS:\t{cand_corrs}.\n')
+#     # print(f'NEURONS CHOSEN:\t{candidates}.')
+#     # print(f'CORRELATIONS:\t{cand_corrs}.\n')
 
-    system_sizes = [2, 3, 4, 5, 6]
-    subset = set([60])
+#     system_sizes = [2, 3, 4, 5, 6]
+#     subset = set([60])
 
-    for s in system_sizes:
-        neurons_to_try = set(range(1, 61)) - subset
+#     for s in system_sizes:
+#         neurons_to_try = set(range(1, 61)) - subset
 
-        print(f'Neurons to try:\t{neurons_to_try}.')
+#         print(f'Neurons to try:\t{neurons_to_try}.')
 
-        # list of predictive accuracies to document which neuron adds most beneficially to overall predictive accuracy.
-        metrics = []
+#         # list of predictive accuracies to document which neuron adds most beneficially to overall predictive accuracy.
+#         metrics = []
 
-        for n in neurons_to_try:
-            subset.add(n)
+#         for n in neurons_to_try:
+#             subset.add(n)
 
-            print(f'Trying subset containing neurons:\t {sorted(subset)}.')
+#             print(f'Trying subset containing neurons:\t {sorted(subset)}.')
 
-            _, ts_stim, ts_net = select_neuron_subset(
-                df, sorted(subset))  # time bins are rows, ts_stim: timeshifted stimulus array, ts_net: timeshifted network array. this selection applies when we choose off of optimal contribution to predictive accuracy.
+#             _, ts_stim, ts_net = select_neuron_subset(
+#                 df, sorted(subset))  # time bins are rows, ts_stim: timeshifted stimulus array, ts_net: timeshifted network array. this selection applies when we choose off of optimal contribution to predictive accuracy.
 
-            j = maxent(ts_stim, ts_net, s)
+#             j = maxent(ts_stim, ts_net, s)
 
-            b, m, mn, mp = cm_metrics(ts_stim, ts_net, j)
+#             b, m, mn, mp = cm_metrics(ts_stim, ts_net, j)
 
-            metrics += [n, b, m, mn, mp]
-            subset.remove(n)
+#             metrics += [n, b, m, mn, mp]
+#             subset.remove(n)
 
-            print(
-                f'List of neuron indices and predictive accuracies:\n\n{metrics}')
+#             print(
+#                 f'List of neuron indices and predictive accuracies:\n\n{metrics}')
 
-        metrics = np.array(metrics).reshape(
-            (len(neurons_to_try), 5))  # reshapes into an nx5 array
+#         metrics = np.array(metrics).reshape(
+#             (len(neurons_to_try), 5))  # reshapes into an nx5 array
 
-        # Find the neuron that maximizes model predictive accuracy
-        max_idx = np.argmax(metrics[:, 2])
-        best_neuron_idx = int(metrics[max_idx, 0])
-        subset.add(best_neuron_idx)
+#         # Find the neuron that maximizes model predictive accuracy
+#         max_idx = np.argmax(metrics[:, 2])
+#         best_neuron_idx = int(metrics[max_idx, 0])
+#         subset.add(best_neuron_idx)
 
-        b, m, mn, mp = metrics[max_idx, 1:]
+#         b, m, mn, mp = metrics[max_idx, 1:]
 
-        if s == 6:
-            print(f'Optimal subset:\t{subset}')
-            return b, m, bn, mn, bp, mp
+#         if s == 6:
+#             print(f'Optimal subset:\t{subset}')
+#             return b, m, bn, mn, bp, mp
 
 
-x_type = input(f'Global (\'global\') or local (\'local\') stim? ')
+# x_type = input(f'Global (\'global\') or local (\'local\') stim? ')
 
-TS = -1 if x_type == 'global' else 0  # timeshift 0 ms
-# SSIZE = 6  # subsystem size of 6 -> UPDATE: is now useless if not considering Pearson corr.
+# TS = -1 if x_type == 'global' else 0  # timeshift 0 ms
+# # SSIZE = 6  # subsystem size of 6 -> UPDATE: is now useless if not considering Pearson corr.
 
-xp_list = [9, 12, 14, 15, 16, 17, 18, 19]
-bsizes = [0.025, 0.05, 0.1, 0.2]  # in seconds
+# xp_list = [9, 12, 14, 15, 16, 17, 18, 19]
+# bsizes = [0.025, 0.05, 0.1, 0.2]  # in seconds
 
-b, p, b_tn, p_tn, b_tp, p_tp = [], [], [], [], [], []
+# b, p, b_tn, p_tn, b_tp, p_tp = [], [], [], [], [], []
 
-for xp in xp_list:
+# for xp in xp_list:
 
-    # metrics with b at the end to denote binsizes
-    bb, mb, bnb, mnb, bpb, mpb = [], [], [], [], [], []
+#     # metrics with b at the end to denote binsizes
+#     bb, mb, bnb, mnb, bpb, mpb = [], [], [], [], [], []
 
-    for bin in bsizes:
+#     for bin in bsizes:
 
-        print(f'ANALYZING EXPERIMENT {xp} WITH BIN SIZE {1000 * bin} MS.')
+#         print(f'ANALYZING EXPERIMENT {xp} WITH BIN SIZE {1000 * bin} MS.')
 
-        if x_type == 'local':
-            PATH = f'real data/exp{xp}_local.mat'
-            Ts, Cs = load_data(PATH)
-            _, full_array = neuron_system(
-                Ts / bin, Cs, int(72000 / bin))
-            df = split_array(full_array, int(TS * (0.1 / bin)), bin)
+#         if x_type == 'local':
+#             PATH = f'real data/exp{xp}_local.mat'
+#             Ts, Cs = load_data(PATH)
+#             _, full_array = neuron_system(
+#                 Ts / bin, Cs, int(72000 / bin))
+#             df = split_array(full_array, int(TS * (0.1 / bin)), bin)
 
-        elif x_type == 'global':
-            PATH = f'real data/experiment_{xp}_20h_stim.mat'
-            df = extract_opto(PATH, int(TS * (0.1 / bin)), bin)
+#         elif x_type == 'global':
+#             PATH = f'real data/experiment_{xp}_20h_stim.mat'
+#             df = extract_opto(PATH, int(TS * (0.1 / bin)), bin)
 
-        else:
-            raise ValueError(
-                'The stimulation type needs to be global or local.')
+#         else:
+#             raise ValueError(
+#                 'The stimulation type needs to be global or local.')
 
-        bl, ml, bln, mln, blp, mlp = metrics_by_binsize(df)
+#         bl, ml, bln, mln, blp, mlp = metrics_by_binsize(df)
 
-        print('\n')
-        print(bl, ml, bln, mln, blp, mlp)
-        print('\n')
+#         print('\n')
+#         print(bl, ml, bln, mln, blp, mlp)
+#         print('\n')
 
-        bb.append(bl)
-        mb.append(ml)
-        bnb.append(bln)
-        mnb.append(mln)
-        bpb.append(blp)
-        mpb.append(mlp)
+#         bb.append(bl)
+#         mb.append(ml)
+#         bnb.append(bln)
+#         mnb.append(mln)
+#         bpb.append(blp)
+#         mpb.append(mlp)
 
-    b.append(bb)
-    p.append(mb)
-    b_tn.append(bnb)
-    p_tn.append(mnb)
-    b_tp.append(bpb)
-    p_tp.append(mpb)
+#     b.append(bb)
+#     p.append(mb)
+#     b_tn.append(bnb)
+#     p_tn.append(mnb)
+#     b_tp.append(bpb)
+#     p_tp.append(mpb)
 
-print(f'Baseline:\n{b}\n\n')
-print(f'Model:\n{p}\n\n')
-print(f'Baseline true negatives:\n{b_tn}\n\n')
-print(f'Model true negatives:\n{p_tn}\n\n')
-print(f'Baseline true positives:\n{b_tp}\n\n')
-print(f'Model true positives:\n{p_tp}\n\n')
+# print(f'Baseline:\n{b}\n\n')
+# print(f'Model:\n{p}\n\n')
+# print(f'Baseline true negatives:\n{b_tn}\n\n')
+# print(f'Model true negatives:\n{p_tn}\n\n')
+# print(f'Baseline true positives:\n{b_tp}\n\n')
+# print(f'Model true positives:\n{p_tp}\n\n')
 
-arr, anames = [b, p, b_tn, p_tn, b_tp, p_tp], [
-    'b', 'p', 'b_tn', 'p_tn', 'b_tp', 'p_tp']
+# arr, anames = [b, p, b_tn, p_tn, b_tp, p_tp], [
+#     'b', 'p', 'b_tn', 'p_tn', 'b_tp', 'p_tp']
 
-for a, name in zip(arr, anames):
-    a = np.array(a)
-    np.save(f'{x_type}/{x_type} bsizes {name} revised.npy', a)
+# for a, name in zip(arr, anames):
+#     a = np.array(a)
+#     np.save(f'{x_type}/{x_type} bsizes {name} revised.npy', a)
 
-quit()
+
 
 bg = np.load(f'global/global stim b revised.npy')
 pg = np.load(f'global/global stim p revised.npy')
@@ -153,11 +153,6 @@ pl_tp = np.load(f'local/local stim p_tp revised.npy')
 impg = (pg - bg) / (1 - bg)  # improvement over baseline
 impl = (pl - bl) / (1 - bl)
 
-
-# print(impg)
-print(stats.ttest_ind(impl[:, 0], impl[:, 2]))
-quit()
-
 impg, impgci = mean_and_ci(impg, 95)
 impl, implci = mean_and_ci(impl, 95)
 pg_tn, pg_tnci = mean_and_ci(pg_tn, 95)
@@ -166,6 +161,14 @@ pg_tp, pg_tpci = mean_and_ci(pg_tp, 95)
 pl_tp, pl_tpci = mean_and_ci(pl_tp, 95)
 b_tn, _ = mean_and_ci(b_tn, 95)
 b_tp, _ = mean_and_ci(b_tp, 95)
+
+impg, impgci = impg[1,:], impgci[:,1,:]
+impl, implci = impl[2,:], implci[:,2,:]
+b_tn, b_tp = b_tn[2,:], b_tp[2,:]
+pl_tn, pl_tnci = pl_tn[2,:], pl_tnci[:,2,:]
+pl_tp, pl_tpci = pl_tp[2,:], pl_tpci[:,2,:]
+pg_tn, pg_tnci = pg_tn[1,:], pg_tnci[:,1,:]
+pg_tp, pg_tpci = pg_tp[1,:], pg_tpci[:,1,:]
 
 binsizes = np.array([25, 50, 100, 200])  # in ms
 
@@ -195,6 +198,7 @@ axs[1].errorbar(binsizes+2, pl_tn, yerr=pl_tnci, fmt='none',
                 elinewidth=2, ecolor='#1E88E5', capsize=5, alpha=0.3)
 axs[1].set_xlabel('\\textbf{Time bin size (ms)}')
 axs[1].set_ylabel('\\textbf{True negative rate}')
+axs[1].set_ylim((0.985, 1.001))
 
 axs[2].scatter(binsizes, b_tp, color='#D81B60', s=50, marker='s', alpha=0.5)
 axs[2].scatter(binsizes-2, pg_tp, color='#004D40', s=50, marker='o')
@@ -207,7 +211,7 @@ axs[2].set_ylim(-0.05, 1)
 axs[2].set_xlabel('\\textbf{Time bin size (ms)}')
 axs[2].set_ylabel('\\textbf{True positive rate}')
 
-axs[1].legend()
+axs[1].legend(loc=4)
 
 plt.tight_layout()
 plt.savefig('figs/binsizes revised.png', dpi=400)
