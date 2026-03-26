@@ -6,6 +6,8 @@ The code **Bias and variance.py** contains the code that reproduces the first st
 
 # Confusion matrices with memory and prediction
 
+*Quick note on revisions*: all updated figures corresponding to paper revisions end with `[...] revised.png`. These are the most up-to-date figures which incorporate editor suggestions. *Current as of March 23, 2026.*
+
 This repository contains the code I wrote to analyze and create figures used in the *Confusion matrices with memory and prediction in an organoid* section of the manuscript titled **Analyzing an organism’s sensors using Maximum Entropy models with bias, variance, and confusion matrices**, currently in preparation. [This paper](https://academic.oup.com/pnasnexus/article/2/6/pgad188/7202378) provides more context for what each file in this repo does.
 
 ## Folders
