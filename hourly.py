@@ -2,8 +2,8 @@ from physf import *
 from dataf import *
 
 plt.rcParams.update({
-    "font.size": 20,
-    "legend.fontsize": 16
+    "font.size": 24,
+    "legend.fontsize": 20
 })
 
 TIMESHIFT = 0

@@ -3,8 +3,8 @@ from dataf import *
 import scipy.stats as stats
 
 plt.rcParams.update({
-    'legend.fontsize': 16,
-    'font.size': 22
+    'legend.fontsize': 20,
+    'font.size': 24
 })
 
 

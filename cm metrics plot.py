@@ -8,9 +8,9 @@ plt.rcParams.update({
     "text.latex.preamble": r"\usepackage{amsmath} \usepackage{amssymb}",
     "font.family": "serif",
     "font.weight": "bold",
-    "font.size": 28,
+    "font.size": 36,
     "font.serif": "Computer Modern",
-    "legend.fontsize": 20
+    "legend.fontsize": 22
 })
 
 # GLOBAL
@@ -125,4 +125,4 @@ axs[1, 2].legend(loc=4)
 
 plt.tight_layout()
 plt.savefig('figs/cm metrics revision.png', dpi=400)
-plt.show()
+# plt.show()
